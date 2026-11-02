@@ -63,7 +63,7 @@ def load_split(dataset_dir, source_split):
 
 
 def main():
-    args = parse_args()    
+    args = parse_args()
 
     dataset_dir = args.dataset_dir.expanduser()
 
@@ -90,9 +90,7 @@ def main():
             split_data_dir = data_dir / split
             split_data_dir.mkdir()
 
-            for i, start in enumerate(
-                range(0, len(split_dataset), args.shard_size)
-            ):
+            for i, start in enumerate(range(0, len(split_dataset), args.shard_size)):
                 end = min(start + args.shard_size, len(split_dataset))
                 shard = split_dataset.select(range(start, end))
                 parquet_path = split_data_dir / f"dataset-{i:0{padding}d}.parquet"

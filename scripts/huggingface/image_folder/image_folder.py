@@ -7,9 +7,7 @@ from huggingface_hub import HfApi
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Simple command-line interface."
-    )
+    parser = argparse.ArgumentParser(description="Simple command-line interface.")
     parser.add_argument(
         "--image_folder",
         type=str,
@@ -43,8 +41,7 @@ def main():
     files = sorted(
         str(path)
         for path in Path(args.image_folder).rglob("*")
-        if path.is_file()
-        and path.suffix.lower() in {".jpg", ".jpeg", ".png"}
+        if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png"}
     )
 
     dataset = Dataset.from_dict({"image": files})
@@ -58,9 +55,7 @@ def main():
         data_dir = temp_dir / "data"
         data_dir.mkdir()
 
-        for i, start in enumerate(
-            range(0, len(dataset), args.shard_size)
-        ):
+        for i, start in enumerate(range(0, len(dataset), args.shard_size)):
             end = min(start + args.shard_size, len(dataset))
             shard = dataset.select(range(start, end))
 
