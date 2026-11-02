@@ -13,7 +13,7 @@ def parse_args():
     )
     parser.add_argument(
         "--dataset_dir",
-        type=str,
+        type=Path,
         required=True,
         help="NeRF synthetic dataset root containing transforms_*.json and split folders.",
     )
@@ -65,7 +65,7 @@ def load_split(dataset_dir, source_split):
 def main():
     args = parse_args()    
 
-    dataset_dir = Path(args.dataset_dir).expanduser()
+    dataset_dir = args.dataset_dir.expanduser()
 
     splits = {
         "train": "train",
