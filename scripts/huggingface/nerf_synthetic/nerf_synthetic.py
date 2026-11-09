@@ -50,14 +50,14 @@ def load_split(dataset_dir, source_split):
             frame_path if frame_path.suffix else frame_path.with_suffix(".png")
         )
 
-        examples.append(
-            {
-                "image": str(image_path),
-                "camera_angle_x": metadata["camera_angle_x"],
-                "rotation": frame["rotation"],
-                "transform_matrix": frame["transform_matrix"],
-            }
-        )
+        example = {
+            "image": str(image_path),
+            "camera_angle_x": metadata["camera_angle_x"],
+            "transform_matrix": frame["transform_matrix"],
+        }
+        if "rotation" in frame:
+            example["rotation"] = frame["rotation"]
+        examples.append(example)
 
     return Dataset.from_list(examples).cast_column("image", Image())
 
@@ -76,6 +76,7 @@ def main():
         {
             split: load_split(dataset_dir, source_split)
             for split, source_split in splits.items()
+            if (dataset_dir / f"transforms_{source_split}.json").is_file()
         }
     )
 
@@ -99,7 +100,7 @@ def main():
         api = HfApi()
 
         api.upload_folder(
-            folder_path=str(temp_dir),
+            folder_path=str(data_dir),
             path_in_repo="",
             repo_id=args.repo_id,
             repo_type="dataset",
