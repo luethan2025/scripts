@@ -39,10 +39,6 @@ def main():
         and PurePosixPath(file_name).parts[0] == "data"
         and file_name.endswith(".parquet")
     )
-    if not parquet_files:
-        raise ValueError(
-            f"No image Parquet files found in Hugging Face dataset {args.repo_id!r}."
-        )
 
     local_parquet_files = [
         hf_hub_download(
