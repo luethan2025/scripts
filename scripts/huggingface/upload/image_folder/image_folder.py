@@ -32,6 +32,11 @@ def parse_args():
         default=10_000,
         help="Maximum number of images per shard.",
     )
+    parser.add_argument(
+        "--single_paruqet",
+        action="store_true",
+        help="Upload all images as data/dataset.parquet.",
+    )
     return parser.parse_args()
 
 
@@ -47,20 +52,23 @@ def main():
     dataset = Dataset.from_dict({"image": files})
     dataset = dataset.cast_column("image", Image())
 
-    num_shards = (len(dataset) + args.shard_size - 1) // args.shard_size
-    padding = len(str(num_shards - 1))
-
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_dir = Path(temp_dir)
         data_dir = temp_dir / "data"
         data_dir.mkdir()
 
-        for i, start in enumerate(range(0, len(dataset), args.shard_size)):
-            end = min(start + args.shard_size, len(dataset))
-            shard = dataset.select(range(start, end))
+        if args.single_paruqet:
+            dataset.to_parquet(str(data_dir / "dataset.parquet"))
+        else:
+            num_shards = (len(dataset) + args.shard_size - 1) // args.shard_size
+            padding = len(str(num_shards - 1))
 
-            parquet_path = data_dir / f"dataset-{i:0{padding}d}.parquet"
-            shard.to_parquet(str(parquet_path))
+            for i, start in enumerate(range(0, len(dataset), args.shard_size)):
+                end = min(start + args.shard_size, len(dataset))
+                shard = dataset.select(range(start, end))
+
+                parquet_path = data_dir / f"dataset-{i:0{padding}d}.parquet"
+                shard.to_parquet(str(parquet_path))
 
         api = HfApi()
 
