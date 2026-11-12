@@ -81,8 +81,12 @@ def main():
         source_split: sorted(
             file_name
             for file_name in repository_files
-            if len(PurePosixPath(file_name).parts) == 2
-            and PurePosixPath(file_name).parts[0] == source_split
+            if (
+                len(PurePosixPath(file_name).parts) == 2
+                and PurePosixPath(file_name).parts[0] == source_split
+                or len(PurePosixPath(file_name).parts) == 3
+                and PurePosixPath(file_name).parts[:2] == ("data", source_split)
+            )
             and file_name.endswith(".parquet")
         )
         for source_split in split_names

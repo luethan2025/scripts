@@ -51,7 +51,7 @@ def load_split(dataset_dir, source_split):
         )
 
         example = {
-            "image": str(image_path),
+            "image": {"bytes": image_path.read_bytes(), "path": None},
             "camera_angle_x": metadata["camera_angle_x"],
             "transform_matrix": frame["transform_matrix"],
         }
